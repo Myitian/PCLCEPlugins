@@ -9,7 +9,7 @@
    dotnet build -c Release UnlockPCLCE
    dotnet publish -p:PublishProfile=FolderProfile Launcher
    ```
-   或者也可以使用 Visual Studio 来进行编译和发布。
+   或者可以使用 Visual Studio 等图形化 IDE 来进行编译和发布。
 2. 将生成的以下文件复制到 PCL 社区版可执行文件所在目录：
    ```
    UnlockPCLCE\bin\Release\net10.0\UnlockPCLCE.dll
