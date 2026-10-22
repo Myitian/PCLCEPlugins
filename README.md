@@ -1,10 +1,9 @@
 # UnlockPCLCE
-Remove restrictions in Plain Craft Launcher Community Edition.
-
-移除 PCL 社区版的各种限制。
+移除 [PCL 社区版](https://github.com/PCL-Community/PCL-CE)的各种限制。采用 [Lib.Harmony](https://github.com/pardeike/Harmony) 以实现启动时注入，无需修改 PCL 社区版可执行文件本身。
 
 ## 使用方法
 
+0. 确保设备上已安装 [.NET 10 SDK](https://get.dot.net/10)。
 1. 在项目根目录执行：
    ```
    dotnet build -c Release UnlockPCLCE
