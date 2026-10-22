@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="Launcher/Launcher.csproj" />
+  <Project Path="UnlockPCLCE/UnlockPCLCE.csproj" />
+</Solution>
