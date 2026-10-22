@@ -15,7 +15,7 @@ Remove restrictions in Plain Craft Launcher Community Edition.
    Launcher\bin\Release\net10.0\publish\Launcher.exe
    UnlockPCLCE\bin\Release\net10.0\UnlockPCLCE.dll
    ```
-3. 使用 `Launcher.exe` 启动 PCL 社区版。默认情况下，会自动搜寻目录下名字匹配类似 `PCL CE` / `Plain Craft Launcher Community Edition` 等模式的文件名。
+3. 使用 `Launcher.exe` 启动 PCL 社区版。默认情况下，会自动搜寻目录下名字匹配类似 `PCL CE` / `Plain Craft Launcher Community Edition` 等模式的文件。
 4. **（如果第三步无法启动，且 `UnlockPCLCE.log` 日志中出现 `Cannot find the PCLCE executable`）**\
    修改 PCL 社区版可执行文件名。也可使用带参数启动：
    ```
