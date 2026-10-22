@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 static partial class Program
 {
     [GeneratedRegex(@"P(lain)?\s*C(raft)?\s*L(auncher)?.*C(ommunity)?\s*E(dition)?", RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture | RegexOptions.Singleline, "zh-CN")]
-    static partial Regex PCLCEExeName { get; }
+    static partial Regex ExeName { get; }
     static void Main(string[] args)
     {
         if (args is not [string exe, ..] || exe is "")
@@ -13,7 +13,7 @@ static partial class Program
             string dir = Environment.CurrentDirectory;
             foreach (string file in Directory.EnumerateFiles(dir, "*.exe"))
             {
-                if (PCLCEExeName.IsMatch(Path.GetFileName(file)))
+                if (ExeName.IsMatch(Path.GetFileName(file.AsSpan())))
                 {
                     exe = file;
                     break;
