@@ -14,7 +14,7 @@ jobs:
       run: |
         dotnet publish -p:PublishProfile=win-x64
         mkdir artifacts
-        mv Launcher/bin/Publish/win-x64/Launcher.dll artifacts/
+        mv Launcher/bin/Publish/win-x64/Launcher.exe artifacts/
         mv PCLCEPluginManager/bin/Publish/win-x64/PCLCEPluginManager.dll artifacts/
         mv UnlockPCLCE/bin/Publish/win-x64/UnlockPCLCE.dll artifacts/
         mv UnlockPCLCE/bin/Publish/win-x64/0Harmony.dll artifacts/
