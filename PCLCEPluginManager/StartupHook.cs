@@ -11,6 +11,7 @@ static class StartupHook
         {
             File.WriteAllBytes("PCLCEPlugins.txt", """
                 # PCL-CE插件管理器配置文件
+                # 井号“#”开头的行为注释行，注释行和空白行会被忽略
                 
                 # 日志级别
                 # 可用的值：
