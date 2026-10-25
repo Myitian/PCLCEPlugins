@@ -74,7 +74,7 @@ static class StartupHook
                             }
                         }
                         if (clearLogs)
-                            File.OpenHandle("PCLCEPlugins.log", FileMode.Create).Dispose();
+                            File.OpenHandle("PCLCEPlugins.log", FileMode.Create, FileAccess.Write).Dispose();
                         break;
                     case "> Plugins:":
                         Utils.Log(nameof(PCLCEPluginManager), "初始化中……");
