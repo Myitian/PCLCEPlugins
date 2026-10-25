@@ -10,18 +10,16 @@ jobs:
       uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.x
-    - name: Build UnlockPCLCE
-      run: dotnet build -c Release UnlockPCLCE
-    - name: Collect UnlockPCLCE artifacts
-      run: mv UnlockPCLCE/bin/Release/net10.0/UnlockPCLCE.dll UnlockPCLCE.dll
-    - name: Build Launcher
-      run: dotnet publish -p:PublishProfile=FolderProfile Launcher
-    - name: Collect Launcher artifacts
-      run: mv Launcher/bin/Release/net10.0/publish/win-x64/Launcher.exe Launcher.exe
+    - name: Build projects
+      run: |
+        dotnet publish -p:PublishProfile=win-x64
+        mkdir artifacts
+        mv Launcher/bin/Publish/win-x64/Launcher.dll artifacts/
+        mv PCLCEPluginManager/bin/Publish/win-x64/PCLCEPluginManager.dll artifacts/
+        mv UnlockPCLCE/bin/Publish/win-x64/UnlockPCLCE.dll artifacts/
+        mv UnlockPCLCE/bin/Publish/win-x64/0Harmony.dll artifacts/
     - name: Upload build artifacts
       uses: actions/upload-artifact@v7
       with:
         name: Artifacts
-        path: |
-          UnlockPCLCE.dll
-          Launcher.exe
+        path: artifacts/

@@ -1,4 +1,5 @@
 <Solution>
   <Project Path="Launcher/Launcher.csproj" />
+  <Project Path="PCLCEPluginManager/PCLCEPluginManager.csproj" Id="02ac18af-5e19-4852-82be-aa437eec9bf9" />
   <Project Path="UnlockPCLCE/UnlockPCLCE.csproj" />
 </Solution>
