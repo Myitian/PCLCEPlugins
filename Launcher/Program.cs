@@ -7,22 +7,24 @@ static partial class Program
     static partial Regex ExeName { get; }
     static void Main(string[] args)
     {
-        if (args is not [string exe, ..] || exe is "")
+        string? exeFile = null;
+        if (args is [string exe, ..] && exe is not "")
+            exeFile = exe;
+        else
         {
-            exe = "";
             string dir = Environment.CurrentDirectory;
             foreach (string file in Directory.EnumerateFiles(dir, "*.exe"))
             {
                 if (ExeName.IsMatch(Path.GetFileName(file.AsSpan())))
                 {
-                    exe = file;
+                    exeFile = file;
                     break;
                 }
             }
         }
-        if (!File.Exists(exe))
+        if (!File.Exists(exeFile))
         {
-            Console.WriteLine($"Cannot find the PCLCE executable: {exe}");
+            File.AppendAllText("LauncherError.log", $"[{DateTime.Now:O}] 无法找到 PCL-CE 可执行文件：{exeFile ?? "<未指定>"}\n");
             return;
         }
         ProcessStartInfo psi = new(exe);
