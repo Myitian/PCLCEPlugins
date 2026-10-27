@@ -27,7 +27,7 @@ static partial class Program
             File.AppendAllText("LauncherError.log", $"[{DateTime.Now:O}] 无法找到 PCL-CE 可执行文件：{exeFile ?? "<未指定>"}\n");
             return;
         }
-        ProcessStartInfo psi = new(exe);
+        ProcessStartInfo psi = new(exeFile);
         for (int i = 1; i < args.Length; i++)
             psi.ArgumentList.Add(args[i]);
         psi.EnvironmentVariables["DOTNET_STARTUP_HOOKS"] = Path.GetFullPath(Path.Join(Environment.CurrentDirectory, "PCLCEPluginManager.dll"));
