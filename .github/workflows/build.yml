@@ -10,6 +10,11 @@ jobs:
       uses: actions/setup-dotnet@v6
       with:
         dotnet-version: 10.x
+    - name: Prepare binaries
+      run: |
+        cd binary
+        dotnet run getdlls.cs
+        cd ..
     - name: Build projects
       run: |
         dotnet publish -p:PublishProfile=win-x64
