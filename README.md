@@ -31,6 +31,6 @@
 ## 附加资源
 以下插件均采用 [Lib.Harmony](https://github.com/pardeike/Harmony) 以实现启动时注入，无需修改 PCL 社区版可执行文件本身。这些插件实现了一些在原版中受限的能力，仅用于演示，请勿滥用。
 ### ColorfulPCLCE
-ColorfulPCLCE 允许自定义 PCL 社区版的颜色，
+自定义 PCL 社区版的颜色。
 ### UnlockPCLCE
-UnlockPCLCE 允许解锁 PCL 社区版的各种限制。
+解锁 PCL 社区版的各种限制。
