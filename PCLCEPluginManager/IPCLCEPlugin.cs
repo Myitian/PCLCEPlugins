@@ -2,5 +2,7 @@ namespace PCLCEPluginManager;
 
 public interface IPCLCEPlugin
 {
-    void Initialize(scoped ReadOnlySpan<char> args);
+    static abstract Version? MinSupportedVersion { get; }
+    static abstract Version? MaxSupportedVersion { get; }
+    static abstract void Initialize(string? arg);
 }

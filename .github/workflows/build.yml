@@ -16,8 +16,9 @@ jobs:
         mkdir artifacts
         mv Launcher/bin/Publish/win-x64/Launcher.exe artifacts/
         mv PCLCEPluginManager/bin/Publish/win-x64/PCLCEPluginManager.dll artifacts/
+        mv PCLCEPluginManager/bin/Publish/win-x64/0Harmony.dll artifacts/
         mv UnlockPCLCE/bin/Publish/win-x64/UnlockPCLCE.dll artifacts/
-        mv UnlockPCLCE/bin/Publish/win-x64/0Harmony.dll artifacts/
+        mv ColorfulPCLCE/bin/Publish/win-x64/ColorfulPCLCE.dll artifacts/
     - name: Upload build artifacts
       uses: actions/upload-artifact@v7
       with:

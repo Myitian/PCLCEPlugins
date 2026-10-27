@@ -1,7 +1,16 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net10.0-windows</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.4.3" />
+    <Reference Include="PCL.Core">
+      <HintPath>..\binary\PCL.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Plain Craft Launcher 2">
+      <HintPath>..\binary\Plain Craft Launcher 2.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

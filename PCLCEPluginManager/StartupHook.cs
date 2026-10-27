@@ -1,3 +1,4 @@
+using HarmonyLib;
 using PCLCEPluginManager;
 using System.Reflection;
 using System.Text;
@@ -6,7 +7,23 @@ static class StartupHook
 {
     public static void Initialize()
     {
-        Utils.MinLogLevel = LogLevel.INFO;
+        try
+        {
+            Assembly.LoadFrom(Path.GetFullPath("0Harmony.dll"));
+            InitializeCore();
+        }
+        catch (Exception ex)
+        {
+            InternalUtils.Log($"初始化时出现错误", ex);
+        }
+    }
+    public static void InitializeCore()
+    {
+        new Harmony(nameof(PCLCEPluginManager)).PatchAll();
+        MethodInfo initializePlugin = AccessTools.Method(typeof(InternalUtils), nameof(InternalUtils.InitializePlugin));
+        Utils.Initialized = false;
+        Utils.MainVersion = Assembly.GetEntryAssembly()?.GetName().Version;
+        InternalUtils.MinLogLevel = LogLevel.INFO;
         if (!File.Exists("PCLCEPlugins.txt"))
         {
             File.WriteAllBytes("PCLCEPlugins.txt", """
@@ -38,93 +55,100 @@ static class StartupHook
         bool readingConfigName = true;
         int pluginAssemblyCount = 0;
         int pluginTypeCount = 0;
-        try
+        bool firstPlugin = true;
+        while (reader.ReadLine() is string line)
         {
-            while (reader.ReadLine() is string line)
+            ReadOnlySpan<char> lineSpan = line.AsSpan().TrimStart('\uFEFF');
+            ReadOnlySpan<char> trimmed = line.Trim();
+            if (trimmed.IsEmpty || trimmed.StartsWith('#'))
+                continue;
+            if (readingConfigName)
             {
-                ReadOnlySpan<char> lineSpan = line.AsSpan().TrimStart('\uFEFF');
-                ReadOnlySpan<char> trimmed = line.Trim();
-                if (trimmed.IsEmpty || trimmed.StartsWith('#'))
-                    continue;
-                if (readingConfigName)
-                {
-                    configName = trimmed;
-                    readingConfigName = false;
-                    continue;
-                }
-                switch (configName)
-                {
-                    case "> MinLogLevel:":
-                        if (Enum.TryParse(trimmed, out LogLevel logLevel))
-                            Utils.MinLogLevel = logLevel;
+                configName = trimmed;
+                readingConfigName = false;
+                continue;
+            }
+            switch (configName)
+            {
+                case "> MinLogLevel:":
+                    if (Enum.TryParse(trimmed, out LogLevel logLevel))
+                        InternalUtils.MinLogLevel = logLevel;
+                    else
+                    {
+                        InternalUtils.Log(LogLevel.ERROR, $"无效的MinLogLevel值：{trimmed}");
+                        return;
+                    }
+                    break;
+                case "> ClearLogs:":
+                    if (!bool.TryParse(trimmed, out bool clearLogs))
+                    {
+                        if (long.TryParse(trimmed, out long clearLogsLong))
+                            clearLogs = clearLogsLong != 0;
                         else
                         {
-                            Utils.Log(nameof(PCLCEPluginManager), $"无效的MinLogLevel值：{trimmed}", LogLevel.ERROR);
+                            InternalUtils.Log(LogLevel.ERROR, $"无效的ClearLogs值：{trimmed}");
                             return;
                         }
-                        break;
-                    case "> ClearLogs:":
-                        if (!bool.TryParse(trimmed, out bool clearLogs))
+                    }
+                    if (clearLogs)
+                        File.OpenHandle("PCLCEPlugins.log", FileMode.Create, FileAccess.Write).Dispose();
+                    break;
+                case "> Plugins:":
+                    if (firstPlugin)
+                    {
+                        InternalUtils.Log($"初始化中……");
+                        InternalUtils.Log($"当前PCL-CE版本：{Utils.MainVersion?.ToString() ?? "未知"}");
+                        firstPlugin = false;
+                    }
+                    string? arg;
+                    string plugin;
+                    int pipe = lineSpan.IndexOf('|');
+                    if (pipe >= 0)
+                    {
+                        arg = lineSpan[(pipe + 1)..].ToString();
+                        plugin = lineSpan[..pipe].Trim().ToString();
+                    }
+                    else
+                    {
+                        arg = null;
+                        plugin = trimmed.ToString();
+                    }
+                    string pluginPath = Path.GetFullPath(plugin);
+                    InternalUtils.Log($"加载插件：{pluginPath}");
+                    if (!File.Exists(pluginPath))
+                    {
+                        InternalUtils.Log(LogLevel.WARN, $"文件不存在：{pluginPath}");
+                        continue;
+                    }
+                    foreach (Type type in Assembly.LoadFrom(pluginPath).GetTypes())
+                    {
+                        if (!type.GetInterfaces().Any(typeof(IPCLCEPlugin).Equals))
+                            continue;
+                        MethodInfo method;
+                        try
                         {
-                            if (long.TryParse(trimmed, out long clearLogsLong))
-                                clearLogs = clearLogsLong != 0;
-                            else
-                            {
-                                Utils.Log(nameof(PCLCEPluginManager), $"无效的ClearLogs值：{trimmed}", LogLevel.ERROR);
-                                return;
-                            }
+                            method = initializePlugin.MakeGenericMethod(type);
                         }
-                        if (clearLogs)
-                            File.OpenHandle("PCLCEPlugins.log", FileMode.Create, FileAccess.Write).Dispose();
-                        break;
-                    case "> Plugins:":
-                        Utils.Log(nameof(PCLCEPluginManager), "初始化中……");
-                        ReadOnlySpan<char> arg;
-                        ReadOnlySpan<char> plugin;
-                        int pipe = lineSpan.IndexOf('|');
-                        if (pipe >= 0)
+                        catch (Exception ex)
                         {
-                            arg = lineSpan[(pipe + 1)..].Trim();
-                            plugin = lineSpan[..pipe].Trim();
-                        }
-                        else
-                        {
-                            arg = "";
-                            plugin = trimmed;
-                        }
-                        string pluginPath = Path.GetFullPath(plugin.ToString());
-                        Utils.Log(nameof(PCLCEPluginManager), $"加载插件：{pluginPath}");
-                        if (!File.Exists(pluginPath))
-                        {
-                            Utils.Log(nameof(PCLCEPluginManager), $"文件不存在：{pluginPath}", LogLevel.WARN);
+                            InternalUtils.Log("初始化插件时出现错误", ex);
                             continue;
                         }
-                        foreach (Type type in Assembly.LoadFrom(pluginPath).GetTypes())
-                        {
-                            if (type.IsAbstract
-                                || type.IsByRefLike
-                                || !type.IsAssignableTo(typeof(IPCLCEPlugin))
-                                || Activator.CreateInstance(type) is not IPCLCEPlugin pluginInstance)
-                                continue;
-                            pluginInstance.Initialize(arg);
+                        if (method.Invoke(null, [pluginPath, arg]) is true)
                             pluginTypeCount++;
-                        }
-                        pluginAssemblyCount++;
-                        continue;
-                    default:
-                        Utils.Log(nameof(PCLCEPluginManager), $"未知的配置项：{configName}={trimmed}", LogLevel.WARN);
-                        break;
-                }
-                readingConfigName = true;
+                    }
+                    pluginAssemblyCount++;
+                    continue;
+                default:
+                    InternalUtils.Log(LogLevel.WARN, $"未知的配置项：{configName}={trimmed}");
+                    break;
             }
-        }
-        catch (Exception ex)
-        {
-            Utils.Log(nameof(PCLCEPluginManager), $"初始化时出现错误", ex);
+            readingConfigName = true;
         }
         if (pluginAssemblyCount == 0)
-            Utils.Log(nameof(PCLCEPluginManager), "没有插件被加载");
+            InternalUtils.Log("没有插件被加载");
         else
-            Utils.Log(nameof(PCLCEPluginManager), $"{pluginAssemblyCount}个插件被加载，包含{pluginTypeCount}个插件类");
+            InternalUtils.Log($"{pluginAssemblyCount}个插件被加载，包含{pluginTypeCount}个插件类");
+        Utils.Initialized = true;
     }
 }

@@ -5,17 +5,31 @@ namespace UnlockPCLCE;
 
 sealed class UnlockPCLCEPlugin : IPCLCEPlugin
 {
-    public void Initialize(scoped ReadOnlySpan<char> arg)
+    public static Version? MinSupportedVersion => null;
+    public static Version? MaxSupportedVersion => null;
+
+    public static void Initialize(string? arg)
     {
-        Utils.Log(nameof(UnlockPCLCE), "初始化中……");
+        Log("初始化中……");
         try
         {
-            new Harmony("UnlockPCLCE").PatchAll();
-            Utils.Log(nameof(UnlockPCLCE), "已初始化");
+            new Harmony(nameof(UnlockPCLCEPlugin)).PatchAll();
+            Log("已初始化");
         }
         catch (Exception ex)
         {
-            Utils.Log(nameof(UnlockPCLCE), "初始化时出现错误", ex);
+            Log("初始化时出现错误", ex);
         }
+    }
+    public static void Log(string message, Exception? ex = null)
+    {
+        if (ex is null)
+            Utils.Log(nameof(UnlockPCLCE), message);
+        else
+            Utils.Log(nameof(UnlockPCLCE), message, ex);
+    }
+    public static void Log(LogLevel logLevel, string message)
+    {
+        Utils.Log(nameof(UnlockPCLCE), message, logLevel);
     }
 }

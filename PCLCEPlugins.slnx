@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="ColorfulPCLCE/ColorfulPCLCE.csproj" Id="52b09ce0-b602-4d6c-ad4f-0ac862b01969" />
   <Project Path="Launcher/Launcher.csproj" />
   <Project Path="PCLCEPluginManager/PCLCEPluginManager.csproj" Id="02ac18af-5e19-4852-82be-aa437eec9bf9" />
   <Project Path="UnlockPCLCE/UnlockPCLCE.csproj" />
